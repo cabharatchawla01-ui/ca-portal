@@ -1,7 +1,7 @@
 const express = require('express');
 const { z } = require('zod');
-const { query } = require('../config/db');
-const { requireCA } = require('../middleware/auth');
+const { query } = require('./config/db');
+const { requireCA } = require('./middleware/auth');
 
 const router = express.Router();
 
