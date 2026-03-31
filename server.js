@@ -27,10 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
 
 // ── Routes ────────────────────────────────────────────────────
-app.use('/api/client/auth', require('./routes/clientAuth'));
-app.use('/api/ca/auth',     require('./routes/caAuth'));
-app.use('/api/clients',     require('./routes/clients'));
-app.use('/api/documents',   require('./routes/documents'));
+app.use('/api/client/auth', require('./clientAuth'));
+app.use('/api/ca/auth',     require('./caAuth'));
+app.use('/api/clients',     require('./clients'));
+app.use('/api/documents',   require('./documents'));
 
 // ── 404 ───────────────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
