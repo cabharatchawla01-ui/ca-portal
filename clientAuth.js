@@ -66,7 +66,7 @@ router.post('/pan-login', async (req, res) => {
 });
 
 // ── GET /api/client/auth/me ───────────────────────────────────
-const { requireClient } = require('../middleware/auth');
+const { requireClient } = require('./middleware/auth');
 
 router.get('/me', requireClient, async (req, res) => {
   try {
