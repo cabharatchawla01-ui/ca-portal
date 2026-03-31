@@ -1,8 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { z } = require('zod');
-const { query } = require('../config/db');
-const { signCAToken, requireCA } = require('../middleware/auth');
+const { query } = require('./config/db');
+const { signCAToken, requireCA } = require('./middleware/auth');
 
 const router = express.Router();
 
