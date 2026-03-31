@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const { z } = require('zod');
 const { query } = require('./config/db');
-const { uploadFile, getSignedUrl, deleteFile } = require('../config/storage');
+const { uploadFile, getSignedUrl, deleteFile } = require('./config/storage');
 const { requireCA, requireClient } = require('./middleware/auth');
 
 const router = express.Router();
