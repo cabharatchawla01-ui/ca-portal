@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Documents — CA Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#111318;--ink2:#42464f;--ink3:#888d9c;--ink4:#bbbfc9;
+  --surf:#fff;--surf2:#f0f2f7;--border:#e0e3ea;
+  --blue:#1a56db;--blue-l:#eff4ff;--blue-d:#1447b3;
+  --green:#0f9e52;--green-l:#f0fdf4;
+  --red:#dc2626;--red-l:#fef2f2;
+  --navy:#0d1529;
+  --r:12px;--rsm:8px;
+}
+body{font-family:'DM Sans',sans-serif;color:var(--ink);font-size:14px;line-height:1.5;min-height:100vh;background:var(--surf2)}
+
+/* Login screen */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#0d1529 0%,#1a3575 55%,#0d2757 100%)}
+.login-card{background:var(--surf);border-radius:20px;padding:38px 32px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.3)}
+
+/* Logo */
+.logo-area{text-align:center;margin-bottom:28px}
+.logo-icon{width:56px;height:56px;background:var(--blue-l);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+.logo-icon svg{width:28px;height:28px;color:var(--blue)}
+.logo-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--ink)}
+.logo-sub{font-size:13px;color:var(--ink3);margin-top:3px}
+
+/* PAN input area */
+.section-label{font-size:11.5px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px}
+.section-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.section-sub{font-size:13px;color:var(--ink3);margin-bottom:22px;line-height:1.6}
+
+.field-label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:5px}
+
+/* Firm ID input */
+.firm-input-wrap{display:flex;border:1.5px solid var(--border);border-radius:var(--rsm);overflow:hidden;transition:border .15s}
+.firm-input-wrap:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+.firm-prefix{padding:10px 12px;background:#f5f7fa;font-size:12.5px;color:var(--ink3);border-right:1px solid var(--border);white-space:nowrap}
+.firm-input-wrap input{flex:1;border:none;padding:10px 12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;color:var(--ink)}
+
+/* PAN boxes - split character input */
+.pan-wrap{margin-bottom:6px}
+.pan-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.pan-label .fl{font-size:12px;font-weight:600;color:var(--ink2)}
+.pan-label .hint{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace}
+.pan-boxes{display:flex;gap:5px;align-items:center}
+.pan-box{
+  width:34px;height:44px;
+  border:1.5px solid var(--border);
+  border-radius:6px;
+  font-size:15px;font-weight:600;
+  font-family:'DM Mono',monospace;
+  text-align:center;
+  color:var(--ink);
+  outline:none;
+  transition:all .15s;
+  text-transform:uppercase;
+  caret-color:var(--blue);
+}
+.pan-box:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.12)}
+.pan-box.filled{border-color:var(--blue);background:var(--blue-l)}
+.pan-sep{font-size:18px;color:var(--ink4);font-weight:300;flex-shrink:0}
+.pan-full{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:18px;font-weight:600;font-family:'DM Mono',monospace;text-align:center;letter-spacing:3px;outline:none;transition:border .15s;text-transform:uppercase;color:var(--ink)}
+.pan-full:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+.pan-full.valid{border-color:var(--green);background:var(--green-l);color:#065f46}
+
+.btn{width:100%;padding:13px;border-radius:var(--rsm);border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;margin-top:18px}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-d)}
+.btn-primary:disabled{background:#93aadf;cursor:not-allowed}
+.btn svg{width:16px;height:16px}
+
+.err-msg{font-size:13px;color:var(--red);background:var(--red-l);border:1px solid #fecaca;border-radius:var(--rsm);padding:10px 14px;margin-top:10px;display:none}
+.err-msg.show{display:block}
+
+.security-note{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink4);margin-top:16px;justify-content:center}
+.security-note svg{width:13px;height:13px}
+
+/* Portal screen */
+.portal{display:none;min-height:100vh;flex-direction:column}
+.portal.show{display:flex}
+.portal-header{background:var(--navy);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:50}
+.portal-brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:30px;height:30px;background:rgba(255,255,255,.1);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:16px;height:16px;color:#fff}
+.brand-name{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:#fff}
+.brand-firm{font-size:11px;color:rgba(255,255,255,.3);margin-left:8px}
+.portal-user{display:flex;align-items:center;gap:10px}
+.p-avatar{width:32px;height:32px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.p-name{font-size:13px;color:rgba(255,255,255,.7)}
+.p-pan{font-size:11px;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace}
+.logout-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.logout-btn:hover{background:rgba(255,255,255,.18);color:#fff}
+
+.portal-content{max-width:760px;margin:0 auto;padding:28px 20px;flex:1;width:100%}
+
+.welcome-card{background:var(--surf);border-radius:14px;padding:20px 22px;margin-bottom:22px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.w-icon{width:48px;height:48px;background:var(--blue-l);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.w-icon svg{width:24px;height:24px;color:var(--blue)}
+.w-text h2{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;margin-bottom:2px}
+.w-text p{font-size:13px;color:var(--ink3)}
+
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:6px 15px;border-radius:100px;border:1.5px solid var(--border);background:var(--surf);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;color:var(--ink2)}
+.filter-btn:hover{border-color:var(--blue);color:var(--blue)}
+.filter-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+.docs-list{display:flex;flex-direction:column;gap:10px}
+.doc-card{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;transition:box-shadow .15s,transform .1s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.doc-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.1);transform:translateY(-1px)}
+.doc-file-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.doc-file-icon svg{width:22px;height:22px}
+.doc-info{flex:1;min-width:0}
+.doc-title{font-size:14px;font-weight:700;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.doc-meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cat-badge{padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700}
+.meta-txt{font-size:12px;color:var(--ink3)}
+.dl-btn{flex-shrink:0;padding:10px 18px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.dl-btn:hover{background:var(--blue-d)}
+.dl-btn:disabled{background:#93aadf;cursor:not-allowed}
+.dl-btn svg{width:14px;height:14px}
+
+.empty-docs{background:var(--surf);border-radius:14px;padding:60px 20px;text-align:center;color:var(--ink3)}
+.empty-docs svg{width:44px;height:44px;margin:0 auto 12px;display:block;opacity:.3}
+.empty-docs p{font-size:14px;font-weight:500;margin-bottom:4px;color:var(--ink2)}
+.empty-docs span{font-size:13px}
+
+.footer-note{text-align:center;font-size:12px;color:var(--ink4);margin-top:28px;line-height:1.7}
+
+/* Toast */
+.toast-wrap{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;align-items:center;gap:8px}
+.toast{padding:11px 20px;border-radius:100px;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.2);white-space:nowrap;animation:toastUp .2s ease}
+.toast-ok{background:var(--green);color:#fff}
+.toast-err{background:var(--red);color:#fff}
+@keyframes toastUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Category colors */
+.cat-itr{background:#fee2e2;color:#b91c1c}
+.cat-gst{background:#dbeafe;color:#1e40af}
+.cat-balance_sheet{background:#d1fae5;color:#065f46}
+.cat-audit{background:#fef3c7;color:#92400e}
+.cat-tds{background:#f3e8ff;color:#6b21a8}
+.cat-other{background:#f1f5f9;color:#475569}
+.file-pdf{background:#fee2e2;color:#dc2626}
+.file-xl{background:#d1fae5;color:#059669}
+.file-other{background:#eff4ff;color:#1a56db}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="logo-area">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <div class="logo-title">My Documents</div>
+      <div class="logo-sub">Access your files from your CA</div>
+    </div>
+
+    <div style="margin-bottom:18px">
+      <label class="field-label">Firm ID <span style="color:var(--ink4);font-weight:400">(your CA will share this)</span></label>
+      <div class="firm-input-wrap">
+        <div class="firm-prefix">caportal.in/</div>
+        <input type="text" id="firm-slug-inp" placeholder="sharma-associates" autocomplete="off" autocapitalize="none"/>
+      </div>
+    </div>
+
+    <div class="pan-wrap">
+      <div class="pan-label">
+        <span class="fl">PAN Number</span>
+        <span class="hint">ABCDE1234F</span>
+      </div>
+      <input
+        class="pan-full"
+        id="pan-input"
+        maxlength="10"
+        placeholder="Enter your 10-digit PAN"
+        autocomplete="off"
+        spellcheck="false"
+        oninput="onPANInput(this)"
+        onkeydown="if(event.key==='Enter')login()"
+      />
+    </div>
+
+    <div class="err-msg" id="err-msg">—</div>
+
+    <button class="btn btn-primary" id="login-btn" onclick="login()" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Access My Documents
+    </button>
+
+    <div class="security-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Documents are encrypted · Download links expire in 1 hour
+    </div>
+  </div>
+</div>
+
+<!-- Portal -->
+<div class="portal" id="portal">
+  <header class="portal-header">
+    <div class="portal-brand">
+      <div class="brand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <span class="brand-name">My Documents</span>
+      <span class="brand-firm" id="portal-firm">—</span>
+    </div>
+    <div class="portal-user">
+      <div class="p-avatar" id="p-avatar">R</div>
+      <div>
+        <div class="p-name" id="p-name">—</div>
+        <div class="p-pan" id="p-pan">PAN: —</div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="portal-content">
+    <div class="welcome-card">
+      <div class="w-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <div class="w-text">
+        <h2>Welcome, <span id="w-name">—</span> 👋</h2>
+        <p id="w-sub">Your documents from your CA are ready to download</p>
+      </div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('itr',this)">ITR</button>
+      <button class="filter-btn" onclick="setFilter('gst',this)">GST</button>
+      <button class="filter-btn" onclick="setFilter('balance_sheet',this)">Balance Sheet</button>
+      <button class="filter-btn" onclick="setFilter('audit',this)">Audit</button>
+      <button class="filter-btn" onclick="setFilter('tds',this)">TDS</button>
+    </div>
+
+    <div class="docs-list" id="docs-list"></div>
+
+    <div class="footer-note">
+      🔐 All files are securely stored. Download links are encrypted and expire in 1 hour.<br>
+      Contact your CA if you cannot find a document.
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ── CONFIG — update this after you deploy the backend ─────────
+const API = 'https://YOUR-BACKEND-URL.railway.app'; // ← change this!
+
+const CAT_LABEL={itr:'ITR',gst:'GST',balance_sheet:'Balance Sheet',audit:'Audit Report',tds:'TDS',invoice:'Invoice',other:'Other'};
+let allDocs=[], activeFilter='all', currentUser=null, authToken=null;
+
+// ── PAN input handling ────────────────────────────────────────
+function onPANInput(el){
+  el.value=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10);
+  const valid=/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(el.value);
+  el.classList.toggle('valid',valid);
+  const slug=document.getElementById('firm-slug-inp').value.trim();
+  document.getElementById('login-btn').disabled=!(valid&&slug);
+  document.getElementById('err-msg').classList.remove('show');
+}
+
+document.getElementById('firm-slug-inp').addEventListener('input',()=>{
+  const pan=document.getElementById('pan-input').value;
+  const valid=/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan);
+  const slug=document.getElementById('firm-slug-inp').value.trim();
+  document.getElementById('login-btn').disabled=!(valid&&slug);
+});
+
+// ── Login — calls real API ────────────────────────────────────
+async function login(){
+  const pan=document.getElementById('pan-input').value.toUpperCase().trim();
+  const slug=document.getElementById('firm-slug-inp').value.trim();
+  const btn=document.getElementById('login-btn');
+
+  if(!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)){showErr('Enter a valid 10-digit PAN number');return;}
+  if(!slug){showErr('Enter your firm ID');return;}
+
+  btn.innerHTML='<div class="spinner"></div>Looking up records…';
+  btn.disabled=true;
+
+  try{
+    const res=await fetch(`${API}/api/client/auth/pan-login`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({pan,firmSlug:slug}),
+    });
+    const data=await res.json();
+    if(!res.ok){showErr(data.error||'Login failed');return;}
+
+    authToken=data.token;
+    localStorage.setItem('client_token',authToken);
+    currentUser={name:data.client.name,pan,firmName:data.client.firmName,firmSlug:slug};
+
+    // Fetch documents
+    const docRes=await fetch(`${API}/api/documents/my`,{headers:{Authorization:'Bearer '+authToken}});
+    allDocs=docRes.ok?(await docRes.json()):[];
+    enterPortal();
+  }catch(err){
+    showErr('Cannot reach server. Please try again.');
+  }finally{
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Access My Documents';
+    btn.disabled=false;
+  }
+}
+
+function showErr(msg){
+  const e=document.getElementById('err-msg');e.textContent=msg;e.classList.add('show');
+  const btn=document.getElementById('login-btn');
+  btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Access My Documents';
+  btn.disabled=false;
+}
+
+// ── Portal ────────────────────────────────────────────────────
+function enterPortal(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('portal').classList.add('show');
+  document.getElementById('portal-firm').textContent='· '+currentUser.firmName;
+  document.getElementById('p-avatar').textContent=currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('p-name').textContent=currentUser.name;
+  document.getElementById('p-pan').textContent='PAN: '+currentUser.pan;
+  document.getElementById('w-name').textContent=currentUser.name.split(' ')[0];
+  document.getElementById('w-sub').textContent=`${allDocs.length} document${allDocs.length!==1?'s':''} available from ${currentUser.firmName}`;
+  activeFilter='all';
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.textContent==='All'));
+  renderDocs();
+}
+
+function logout(){
+  document.getElementById('portal').classList.remove('show');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pan-input').value='';
+  document.getElementById('pan-input').classList.remove('valid');
+  document.getElementById('err-msg').classList.remove('show');
+  document.getElementById('login-btn').disabled=true;
+  document.getElementById('login-btn').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Access My Documents';
+  localStorage.removeItem('client_token');
+  currentUser=null;allDocs=[];authToken=null;
+}
+
+// ── Filters & render ──────────────────────────────────────────
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocs();
+}
+
+function renderDocs(){
+  const list=activeFilter==='all'?allDocs:allDocs.filter(d=>d.category===activeFilter);
+  const el=document.getElementById('docs-list');
+  if(!list.length){
+    el.innerHTML=`<div class="empty-docs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>${activeFilter!=='all'?'No '+CAT_LABEL[activeFilter]+' documents':'No documents available yet'}</p><span>${activeFilter!=='all'?'Try a different category':'Your CA will upload documents here'}</span></div>`;
+    return;
+  }
+  el.innerHTML=list.map(doc=>{
+    const fileCls=doc.mime_type==='application/pdf'?'file-pdf':doc.mime_type?.includes('sheet')?'file-xl':'file-other';
+    const fileIcon=doc.mime_type==='application/pdf'
+      ?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15h6"/><path d="M9 11h6"/></svg>`
+      :doc.mime_type?.includes('sheet')
+      ?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>`
+      :`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+    return`<div class="doc-card">
+      <div class="doc-file-icon ${fileCls}">${fileIcon}</div>
+      <div class="doc-info">
+        <div class="doc-title">${doc.title}</div>
+        <div class="doc-meta-row">
+          <span class="cat-badge cat-${doc.category}">${CAT_LABEL[doc.category]||'Other'}</span>
+          ${doc.financial_year?`<span class="meta-txt">FY ${doc.financial_year}</span><span class="meta-txt">·</span>`:''}
+          <span class="meta-txt">${fmtBytes(doc.file_size)}</span>
+          <span class="meta-txt">·</span>
+          <span class="meta-txt">${fmtDate(doc.uploaded_at)}</span>
+        </div>
+      </div>
+      <button class="dl-btn" id="dl-${doc.id}" onclick="download('${doc.id}','${doc.file_name}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </button>
+    </div>`;
+  }).join('');
+}
+
+// ── Download — gets real signed URL from API ──────────────────
+async function download(id,name){
+  const btn=document.getElementById('dl-'+id);
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div>Getting link…';
+  try{
+    const res=await fetch(`${API}/api/documents/${id}/download`,{headers:{Authorization:'Bearer '+authToken}});
+    const data=await res.json();
+    if(!res.ok){showToast('❌ '+(data.error||'Download failed'),'err');return;}
+    const a=document.createElement('a');a.href=data.url;a.download=name;a.target='_blank';a.click();
+    showToast('✅ Downloading '+name);
+  }catch(e){
+    showToast('❌ Could not get download link','err');
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download';
+  }
+}
+
+function showToast(msg,type='ok'){
+  const w=document.getElementById('toast-wrap');
+  const el=document.createElement('div');el.className=`toast toast-${type}`;el.textContent=msg;
+  w.appendChild(el);setTimeout(()=>el.remove(),3000);
+}
+function fmtDate(iso){return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtBytes(b){if(!b)return'—';if(b<1024*1024)return(b/1024).toFixed(0)+' KB';return(b/1024/1024).toFixed(1)+' MB';}
+</script>
+</body>
+</html>
